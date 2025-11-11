@@ -11,16 +11,19 @@ export default function LoginPage() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            // Send login request
             const res = await api.post('/auth/login', { username, password });
 
-            // ✅ Backend returns a raw JWT string (not JSON)
-            const token = res.data;
+            // ✅ 自动识别是否是纯字符串还是 JSON 包
+            const token =
+                typeof res.data === 'string'
+                    ? res.data
+                    : res.data.token || res.data.access_token;
 
             if (token && token.startsWith('ey')) {
                 localStorage.setItem('jwt', token);
                 navigate('/console');
             } else {
+                console.warn('Invalid token:', res.data);
                 setError('Login failed: invalid token returned');
             }
         } catch (err) {
@@ -28,6 +31,7 @@ export default function LoginPage() {
             setError('Invalid username or password');
         }
     };
+
 
     return (
         <div style={{ marginTop: '100px', textAlign: 'center' }}>
