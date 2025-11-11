@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import Dashboard from './pages/Dashboard';
+import AdminConsole from './pages/AdminConsole';
+import ProtectedRoute from './components/ProtectedRoute';
 
-function App() {
-  const [count, setCount] = useState(0)
+/**
+ * App.jsx
+ *
+ * This file defines the main routing structure of the frontend.
+ * - Uses React Router to handle navigation between pages.
+ * - Protects sensitive routes with a "ProtectedRoute" wrapper.
+ * - Redirects any unknown path to the login page.
+ */
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+export default function App() {
+    return (
+        <BrowserRouter>
+            <Routes>
+                {/* Public route: Login page */}
+                <Route path="/login" element={<LoginPage />} />
+
+                {/* Protected route: Dashboard (requires JWT token) */}
+                <Route
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Protected route: Admin Console (requires JWT token) */}
+                <Route
+                    path="/console"
+                    element={
+                        <ProtectedRoute>
+                            <AdminConsole />
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Catch-all: redirect unknown routes to login */}
+                <Route path="*" element={<LoginPage />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
-
-export default App
